@@ -2,11 +2,13 @@ import unittest
 
 from selenium import webdriver
 
+
 class NewVisitorTest(unittest.TestCase):
     """
     setup: 테스트 실행 시
     tearDown: 테스트 종료 시
     """
+
     def setUp(self):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
@@ -20,6 +22,7 @@ class NewVisitorTest(unittest.TestCase):
 
         self.assertIn('To-Do', self.browser.title)
         self.fail('Finish the test!')
+
 
 # 커맨드 라인을 통해 직접 실행된 경우에도 unittest 실행자 실행(파일 내 테스트 클래스와 메소드를 찾아서 실행)
 if __name__ == '__main__':
