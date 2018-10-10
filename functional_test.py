@@ -19,6 +19,11 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     # 웹 페이지를 열고 해당 페이지가 맞는 지 테스트
     def test_can_start_a_list_and_retrieve_it_later(self):
         self.browser.get('http://localhost:8001')
@@ -38,8 +43,8 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: 공작깃털 사기', [row.text for row in rows])
-        self.assertIn('2: 공작깃털을 이용해서 그물 만들기', [row.text for row in rows])
+        self.check_for_row_in_list_table('2: 공작깃털을 이용해서 그물 만들기')
+        self.check_for_row_in_list_table('1: 공작깃털 사기')
         self.fail('Finish the test!')
 
 
