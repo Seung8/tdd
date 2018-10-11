@@ -20,22 +20,37 @@ class HomePageTest(TestCase):
         csrf_regex = r'<input[^>]+csrfmiddlewaretoken[^>]+>'
         observed_html = re.sub(csrf_regex, '', response.content.decode())
         expected_html = render_to_string('home.html')
+
         self.assertEqual(observed_html, expected_html)
 
     def test_home_page_can_save_a_POST_request(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['item_text'] = '신규 작업 아이템'
-        response = home_page(request)
-        self.assertIn('신규 작업 아이템', response.content.decode())
 
-        csrf_regex = r'<input[^>]+csrfmiddlewaretoken[^>]+>'
-        observed_html = re.sub(csrf_regex, '', response.content.decode())
-        expected_html = render_to_string(
-            'home.html',
-            {'new_item_text': '신규 작업 아이템'},
-        )
-        self.assertEqual(observed_html, expected_html)
+        response = home_page(request)
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, '신규 작업 아이템')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+        # self.assertIn('신규 작업 아이템', response.content.decode())
+        #
+        # csrf_regex = r'<input[^>]+csrfmiddlewaretoken[^>]+>'
+        # observed_html = re.sub(csrf_regex, '', response.content.decode())
+        # expected_html = render_to_string(
+        #     'home.html',
+        #     {'new_item_text': '신규 작업 아이템'},
+        # )
+        # self.assertEqual(observed_html, expected_html)
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Item.objects.count(), 0)
 
 class ItemModelTest(TestCase):
     def test_saving_and_retrieving_items(self):
